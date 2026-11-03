@@ -1,6 +1,9 @@
-import { ScrollView } from "react-native";
+import { useState } from "react";
+import { ScrollView, Pressable, Text } from "react-native";
 import Titre from "../components/titre";
 import PokemonCard from "../components/PokemonCard";
+import Pokeball from "../components/Pokeball";
+import Aide from "../components/Aide";
 
 const POKEMONS = [
   { number: 1, name: "Bulbizarre", type: "Plante" },
@@ -12,10 +15,19 @@ const POKEMONS = [
 ];
 
 export default function Index() {
+  const [feuSeulement, setFeuSeulement] = useState(false);
+  const pokemonsAffiches = feuSeulement ? POKEMONS.filter((pokemon) => pokemon.type === "Feu") : POKEMONS;
+  
   return (
     <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 60 }}>
-      <Titre nombre={POKEMONS.length} />
-      {POKEMONS.map((pokemon) => (
+      <Titre nombre={pokemonsAffiches.length} />
+      <Pokeball />
+
+      <Pressable onPress={() => setFeuSeulement(!feuSeulement)}>
+        <Text>{feuSeulement ? "Tout afficher" : "Type Feu seulement"}</Text>
+      </Pressable>
+
+      {pokemonsAffiches.map((pokemon) => (
         <PokemonCard
           key={pokemon.number}
           number={pokemon.number}
@@ -23,6 +35,7 @@ export default function Index() {
           type={pokemon.type}
         />
       ))}
+      <Aide />
     </ScrollView>
   );
 }

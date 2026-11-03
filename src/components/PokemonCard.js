@@ -1,10 +1,12 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { useState } from "react";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 
 const ARTWORK =
 "https://raw.githubusercontent.com/PokeAPI/sprites" +
 "/master/sprites/pokemon/other/official-artwork/";
 
 export default function PokemonCard({ number, name, type }) {
+  const [estCapturer, setEstCapturer] = useState(false);
   return (
     <View style={styles.card}>
       <Image
@@ -15,6 +17,9 @@ export default function PokemonCard({ number, name, type }) {
         <Text style={styles.number}>#{number}</Text>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.type}>{type}</Text>
+        <Pressable onPress={()=>setEstCapturer(!estCapturer)}>
+            <Text>{ estCapturer ? "Capturé ✓" : "Capturer"}</Text>
+        </Pressable>
       </View>
     </View>
   );
