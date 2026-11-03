@@ -1,41 +1,54 @@
 import { useState } from "react";
-import { ScrollView, Pressable, Text } from "react-native";
-import Titre from "../components/titre";
+import { Pressable, Text, View, FlatList } from "react-native";
+import POKEMONS from "../data/pokemons";
 import PokemonCard from "../components/PokemonCard";
 import Pokeball from "../components/Pokeball";
 import Aide from "../components/Aide";
 
-const POKEMONS = [
-  { number: 1, name: "Bulbizarre", type: "Plante" },
-  { number: 4, name: "Salamèche", type: "Feu" },
-  { number: 7, name: "Carapuce", type: "Eau" },
-  { number: 25, name: "Pikachu", type: "Électrique" },
-  { number: 37, name: "Goupix", type: "Feu" },
-  { number: 43, name: "Mystherbe", type: "Plante" },
-];
-
 export default function Index() {
-  const [feuSeulement, setFeuSeulement] = useState(false);
-  const pokemonsAffiches = feuSeulement ? POKEMONS.filter((pokemon) => pokemon.type === "Feu") : POKEMONS;
-  
+  const [captures, setCaptures] = useState([]);
+  const [capturesSeulement, setCapturesSeulement] = useState(false);
+
+  const toggleCapture = (number) => {
+    setCaptures(
+      captures.includes(number)
+        ? captures.filter((n) => n !== number)
+        : [...captures, number]
+    );
+  };
+
+  const pokemonsAffiches = capturesSeulement
+    ? POKEMONS.filter((pokemon) => captures.includes(pokemon.number))
+    : POKEMONS;
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 60 }}>
-      <Titre nombre={pokemonsAffiches.length} />
+    <View style={{ flex: 1 }}>
       <Pokeball />
-
-      <Pressable onPress={() => setFeuSeulement(!feuSeulement)}>
-        <Text>{feuSeulement ? "Tout afficher" : "Type Feu seulement"}</Text>
+      <Pressable onPress={() => setCapturesSeulement(!capturesSeulement)}>
+        <Text>{capturesSeulement ? "Tout afficher" : "Capturés seulement"}</Text>
       </Pressable>
-
-      {pokemonsAffiches.map((pokemon) => (
-        <PokemonCard
-          key={pokemon.number}
-          number={pokemon.number}
-          name={pokemon.name}
-          type={pokemon.type}
-        />
-      ))}
+      <FlatList
+        data={pokemonsAffiches}
+        keyExtractor={(item) => String(item.number)}
+        numColumns={2}
+        columnWrapperStyle={{ gap: 12 }}
+        contentContainerStyle={{ padding: 16 }}
+        renderItem={({ item }) => (
+          <PokemonCard
+            number={item.number}
+            name={item.name}
+            type={item.type}
+            capture={captures.includes(item.number)}
+            onPress={() => toggleCapture(item.number)}
+          />
+        )}
+        ListHeaderComponent={
+          <Text>
+            {POKEMONS.length} Pokémon · {captures.length} capturés
+          </Text>
+        }
+      />
       <Aide />
-    </ScrollView>
+    </View>
   );
 }
